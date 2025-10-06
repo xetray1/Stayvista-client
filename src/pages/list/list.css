@@ -754,15 +754,134 @@
   background: #1e293b;
 }
 
+@media (max-width: 960px) {
+  .stays__hero {
+    padding: clamp(48px, 6vw, 72px) 0 clamp(32px, 4vw, 56px);
+  }
+
+  .stays__hero-text {
+    max-width: 100%;
+  }
+
+  .stays__filters {
+    border-radius: 24px;
+    padding: clamp(22px, 2.5vw, 32px);
+  }
+
+  .stay-card {
+    min-height: auto;
+  }
+
+  .stay-card__body {
+    padding: clamp(20px, 2.5vw, 28px);
+  }
+}
+
+@media (max-width: 768px) {
+  .stays__body {
+    gap: clamp(24px, 3vw, 36px);
+    padding-bottom: clamp(48px, 6vw, 80px);
+  }
+
+  .stays__filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stay-card__badges {
+    top: 14px;
+    left: 14px;
+  }
+
+  .stay-card__badge {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .stay-card__heading h3 {
+    font-size: clamp(20px, 4vw, 24px);
+  }
+
+  .stay-card__description {
+    font-size: 0.95rem;
+  }
+
+  .stays__results-header h2 {
+    font-size: clamp(22px, 4.5vw, 32px);
+  }
+}
+
 @media (max-width: 600px) {
+  .stays__hero {
+    padding: 36px 0 28px;
+  }
+
+  .stays__title {
+    font-size: clamp(28px, 7vw, 42px);
+  }
+
+  .stays__subtitle {
+    font-size: 15px;
+  }
+
+  .stays__hero-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stays__hero-card {
+    padding: 18px;
+  }
+
+  .stays__filters {
+    padding: 20px;
+    gap: clamp(16px, 2vw, 22px);
+  }
+
+  .stays__filters-actions--inline {
+    flex-direction: column;
+  }
+
+  .stays__filters-actions--inline button {
+    flex: 1 1 auto;
+    max-width: none;
+    width: 100%;
+  }
+
+  .stay-card {
+    border-radius: 24px;
+  }
+
+  .stay-card__media {
+    border-radius: 20px;
+  }
+
+  .stay-card__body {
+    padding: 18px;
+  }
+
   .stay-card__footer {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
   }
 
   .stay-card__cta {
     width: 100%;
     text-align: center;
+    padding: 14px 20px;
+  }
+
+  .stay-card__price {
+    font-size: clamp(20px, 4vw, 24px);
+  }
+
+  .stays__collections {
+    padding: clamp(24px, 3vw, 36px);
+    border-radius: 24px;
+  }
+
+  .stays__collections-grid {
+    grid-template-columns: 1fr;
   }
 }
 

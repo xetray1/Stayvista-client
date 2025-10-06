@@ -15,12 +15,8 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-html {
-  font-size: 100%;
-}
-
 body {
-  font-size: clamp(0.95rem, 0.35vw + 0.9rem, var(--font-size-md));
+  font-size: var(--font-size-md);
   line-height: 1.6;
 }
 
@@ -38,15 +34,10 @@ button {
   font-family: inherit;
 }
 
-:focus-visible {
-  outline: 3px solid rgba(59, 130, 246, 0.6);
-  outline-offset: 2px;
-}
-
 .container {
   width: min(100%, var(--max-content-width));
   margin: 0 auto;
-  padding-inline: clamp(1rem, 3vw, var(--spacing-md));
+  padding: 0 var(--spacing-md);
 }
 
 .section {
@@ -145,41 +136,53 @@ button {
   font-weight: 500;
 }
 
-@media (max-width: var(--breakpoint-md)) {
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
+
   .container {
-    padding-inline: clamp(0.75rem, 3.5vw, 1.25rem);
+    padding: 0 clamp(1rem, 3vw, 1.5rem);
   }
 
   .section {
-    padding: clamp(var(--spacing-md), 4vw, var(--spacing-lg)) 0;
-  }
-}
-
-@media (max-width: var(--breakpoint-sm)) {
-  body {
-    line-height: 1.65;
+    padding: clamp(2rem, 5vw, 3rem) 0;
   }
 
   .section-title {
-    font-size: clamp(1.8rem, 4vw, 2.25rem);
+    font-size: clamp(1.75rem, 5vw, 2.25rem);
   }
 
-  .section-subtitle {
-    font-size: clamp(1rem, 3.8vw, 1.15rem);
+  .btn-primary,
+  .btn-outline {
+    padding: 0.8rem 1.5rem;
   }
 }
 
-@media (max-width: var(--breakpoint-xs)) {
+@media (max-width: 480px) {
   body {
-    font-size: clamp(0.92rem, 0.7vw + 0.85rem, 0.98rem);
+    font-size: 14px;
   }
 
   .container {
-    padding-inline: clamp(0.75rem, 6vw, 1rem);
+    padding: 0 1rem;
+  }
+
+  .section {
+    padding: 1.75rem 0;
+  }
+
+  .section-title {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+  }
+
+  .section-subtitle {
+    font-size: 0.95rem;
   }
 
   .btn-primary,
   .btn-outline {
     width: 100%;
+    text-align: center;
   }
 }

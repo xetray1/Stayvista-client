@@ -113,3 +113,73 @@
   cursor: pointer;
   border-radius: 5px;
 }
+
+@media (max-width: 768px) {
+  .searchItem {
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .siImgWrapper {
+    width: 100%;
+  }
+
+  .siCarousel {
+    height: 200px;
+  }
+
+  .siDesc {
+    gap: 8px;
+  }
+
+  .siDetails {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .siDetailTexts {
+    text-align: left;
+  }
+
+  .siCheckButton {
+    padding: 10px 20px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 520px) {
+  .searchItem {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .siCarousel {
+    height: 180px;
+  }
+
+  .siTitle {
+    font-size: 18px;
+  }
+
+  .siPrice {
+    font-size: 20px;
+  }
+
+  .siDetails {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .siRating {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .siCheckButton {
+    width: 100%;
+    text-align: center;
+  }
+}

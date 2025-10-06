@@ -38,14 +38,6 @@
   --spacing-md: 1.5rem;
   --spacing-lg: 2.5rem;
   --spacing-xl: 4rem;
-  --spacing-xxl: 5.5rem;
-
-  --breakpoint-xl: 1200px;
-  --breakpoint-lg: 992px;
-  --breakpoint-md: 768px;
-  --breakpoint-sm: 640px;
-  --breakpoint-xs: 480px;
-  --breakpoint-xxs: 360px;
 
   --transition-base: 0.3s ease;
 }
