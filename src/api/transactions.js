@@ -6,7 +6,7 @@ export const getTransactions = (params) =>
   withData(apiClient.get("/transactions", { params }));
 
 export const createCheckoutTransaction = (payload) =>
-  withData(apiClient.post("/transactions/checkout", payload));
+  withData(apiClient.post("/transactions/pay", payload));
 
 export const getTransactionById = (id) =>
   withData(apiClient.get(`/transactions/${id}`));

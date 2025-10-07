@@ -367,6 +367,17 @@ const Navbar = () => {
           </div>
         </div>
 
+        {!user && (
+          <div className="navbar__actions navbar__actions--desktop">
+            <Link to="/login" className="navbar__btn navbar__btn--outline">
+              Sign In
+            </Link>
+            <Link to="/register" className="navbar__btn navbar__btn--primary">
+              Get Started
+            </Link>
+          </div>
+        )}
+
         {/* Desktop User Section */}
         {user && (
           <div className="navbar__user navbar__user--desktop">
