@@ -19,6 +19,16 @@ apiClient.interceptors.request.use((config) => {
       ? "admin"
       : "member";
     config.headers["X-Session-Scope"] = scope;
+
+    const token =
+      storedUser?.token ||
+      storedUser?.accessToken ||
+      storedUser?.access_token ||
+      storedUser?.jwtToken;
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   } catch (err) {
     config.headers["X-Session-Scope"] = "member";
   }

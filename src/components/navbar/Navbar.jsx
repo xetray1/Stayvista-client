@@ -1,7 +1,22 @@
 import "./navbar.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBars,
+  faTimes,
+  faHome,
+  faHotel,
+  faCompass,
+  faBook,
+  faReceipt,
+  faSignOutAlt,
+  faBed,
+  faCalendarCheck,
+  faMoneyBillWave,
+  faChevronDown,
+} from "@fortawesome/free-solid-svg-icons";
 
 const Navbar = () => {
   const { user, dispatch } = useContext(AuthContext);
@@ -9,10 +24,35 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     setIsMenuOpen(false);
+    setShowUserMenu(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (!showUserMenu) return;
+
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showUserMenu]);
 
   const isActive = (path) => {
     if (path === "/") {
@@ -21,244 +61,338 @@ const Navbar = () => {
     return location.pathname.startsWith(path);
   };
 
+  const closeUserMenu = () => setShowUserMenu(false);
+  const toggleUserMenu = () => setShowUserMenu((prev) => !prev);
+
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
     localStorage.removeItem("user");
     navigate("/login", { replace: true });
+    setShowUserMenu(false);
   };
 
   const toggleMenu = () => {
+    closeUserMenu();
     setIsMenuOpen((prev) => !prev);
   };
 
-  const closeMenu = () => setIsMenuOpen(false);
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+    closeUserMenu();
+  };
 
-  const primaryLinks = [
-    { label: "Discover", path: "/" },
-    { label: "Experiences", path: "/experiences" },
-    { label: "Stories", path: "/stories" },
-  ];
-
+  // Admin Navbar
   if (isAdmin) {
     return (
-      <header className="admin-navbar">
-        <div className="admin-navbar__container">
-          <Link to="/" className="admin-navbar__brand">
-            <img src="/Icon.ico" alt="StayVista" className="admin-navbar__logo" />
-            <span className="admin-navbar__title">StayVista</span>
+      <nav className={`navbar navbar--admin ${scrolled ? "navbar--scrolled" : ""}`}>
+        <div className="navbar__container">
+          {/* Brand */}
+          <Link to="/" className="navbar__brand" onClick={closeMenu}>
+            <div className="navbar__brand-logo">
+              <img src="/Icon.ico" alt="StayVista" />
+            </div>
+            <div className="navbar__brand-content">
+              <span className="navbar__brand-name">StayVista</span>
+              <span className="navbar__brand-badge">Admin</span>
+            </div>
           </Link>
 
-          <nav className="admin-navbar__nav">
-            <div className="admin-navbar__nav-group">
-              {primaryLinks.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`admin-navbar__link ${isActive(item.path) ? "admin-navbar__link--active" : ""}`}
-                >
-                  {item.label}
-                </Link>
-              ))}
+          {/* Mobile Toggle */}
+          <button
+            className={`navbar__toggle ${isMenuOpen ? "navbar__toggle--active" : ""}`}
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+          >
+            <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} />
+          </button>
+
+          {/* Navigation Links */}
+          <div className={`navbar__menu ${isMenuOpen ? "navbar__menu--open" : ""}`}>
+            <div className="navbar__links navbar__links--primary">
+              <Link
+                to="/"
+                className={`navbar__link ${isActive("/") ? "navbar__link--active" : ""}`}
+                onClick={closeMenu}
+              >
+                <FontAwesomeIcon icon={faHome} className="navbar__link-icon" />
+                <span>Discover</span>
+              </Link>
+              <Link
+                to="/stories"
+                className={`navbar__link ${isActive("/stories") ? "navbar__link--active" : ""}`}
+                onClick={closeMenu}
+              >
+                <FontAwesomeIcon icon={faBook} className="navbar__link-icon" />
+                <span>Stories</span>
+              </Link>
             </div>
-            <div className="admin-navbar__nav-divider" aria-hidden="true" />
-            <div className="admin-navbar__nav-group admin-navbar__nav-group--admin">
+
+            <div className="navbar__divider"></div>
+
+            <div className="navbar__links navbar__links--admin">
               <Link
                 to="/admin/manage-hotel"
-                className={`admin-navbar__link ${isActive("/admin/manage-hotel") ? "admin-navbar__link--active" : ""}`}
+                className={`navbar__link ${isActive("/admin/manage-hotel") ? "navbar__link--active" : ""}`}
+                onClick={closeMenu}
               >
-                Manage hotel
+                <FontAwesomeIcon icon={faHotel} className="navbar__link-icon" />
+                <span>Manage Hotel</span>
               </Link>
               <Link
                 to="/admin/manage-rooms"
-                className={`admin-navbar__link ${isActive("/admin/manage-rooms") ? "admin-navbar__link--active" : ""}`}
+                className={`navbar__link ${isActive("/admin/manage-rooms") ? "navbar__link--active" : ""}`}
+                onClick={closeMenu}
               >
-                Manage rooms
+                <FontAwesomeIcon icon={faBed} className="navbar__link-icon" />
+                <span>Manage Rooms</span>
               </Link>
               <Link
                 to="/admin/today-bookings"
-                className={`admin-navbar__link ${isActive("/admin/today-bookings") ? "admin-navbar__link--active" : ""}`}
+                className={`navbar__link ${isActive("/admin/today-bookings") ? "navbar__link--active" : ""}`}
+                onClick={closeMenu}
               >
-                Today's bookings
+                <FontAwesomeIcon icon={faCalendarCheck} className="navbar__link-icon" />
+                <span>Today's Bookings</span>
               </Link>
               <Link
                 to="/admin/today-transactions"
-                className={`admin-navbar__link ${isActive("/admin/today-transactions") ? "admin-navbar__link--active" : ""}`}
+                className={`navbar__link ${isActive("/admin/today-transactions") ? "navbar__link--active" : ""}`}
+                onClick={closeMenu}
               >
-                Today's transactions
+                <FontAwesomeIcon icon={faMoneyBillWave} className="navbar__link-icon" />
+                <span>Today's Transactions</span>
               </Link>
             </div>
-          </nav>
 
-          <div className="admin-navbar__actions">
+            {/* Mobile User Section */}
             {user && (
-              <div className="admin-navbar__user">
-                <div className="admin-navbar__avatar">
-                  {user.username?.[0]?.toUpperCase()}
-                </div>
-                <span className="admin-navbar__username">{user.username}</span>
-                <button
-                  className="admin-navbar__logout"
-                  onClick={handleLogout}
-                  aria-label="Sign out"
-                >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+              <>
+                <div className="navbar__divider"></div>
+                <div className="navbar__mobile-user">
+                  <div className="navbar__mobile-user-header">
+                    <div className="navbar__user-avatar">
+                      {user.username?.[0]?.toUpperCase()}
+                    </div>
+                    <div className="navbar__user-info">
+                      <span className="navbar__user-name">{user.username}</span>
+                      <span className="navbar__user-role">Administrator</span>
+                    </div>
+                  </div>
+                  <button
+                    className="navbar__link navbar__link--logout"
+                    onClick={() => {
+                      handleLogout();
+                      closeMenu();
+                    }}
                   >
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                    <polyline points="16 17 21 12 16 7" />
-                    <line x1="21" y1="12" x2="9" y2="12" />
-                  </svg>
-                </button>
-              </div>
+                    <FontAwesomeIcon icon={faSignOutAlt} className="navbar__link-icon" />
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              </>
             )}
           </div>
+
+          {/* Desktop User Menu */}
+          {user && (
+            <div className="navbar__user-wrapper" ref={userMenuRef}>
+              <button
+                type="button"
+                className="navbar__user-trigger"
+                onClick={toggleUserMenu}
+                aria-haspopup="true"
+                aria-expanded={showUserMenu}
+              >
+                <div className="navbar__user-avatar">{user.username?.[0]?.toUpperCase()}</div>
+                <div className="navbar__user-info">
+                  <span className="navbar__user-name">{user.username}</span>
+                  <span className="navbar__user-role">Administrator</span>
+                </div>
+                <FontAwesomeIcon
+                  icon={faChevronDown}
+                  className={`navbar__user-chevron ${showUserMenu ? "navbar__user-chevron--open" : ""}`}
+                />
+              </button>
+              {showUserMenu && (
+                <>
+                  <div className="navbar__user-menu">
+                    <div className="navbar__user-menu-header">
+                      <div className="navbar__user-menu-avatar">{user.username?.[0]?.toUpperCase()}</div>
+                      <div>
+                        <div className="navbar__user-menu-name">{user.username}</div>
+                        <div className="navbar__user-menu-email">{user.email || "Administrator"}</div>
+                      </div>
+                    </div>
+                    <div className="navbar__user-menu-divider"></div>
+                    <button className="navbar__user-menu-item" onClick={handleLogout}>
+                      <FontAwesomeIcon icon={faSignOutAlt} />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                  <div className="navbar__user-menu-backdrop" onClick={closeUserMenu}></div>
+                </>
+              )}
+            </div>
+          )}
         </div>
-      </header>
+
+        {/* Mobile Overlay */}
+        {isMenuOpen && (
+          <div className="navbar__overlay" onClick={closeMenu}></div>
+        )}
+      </nav>
     );
   }
 
+  // Customer Navbar
   return (
-    <header className="navbar">
-      <div className="navbar__inner container">
-        <Link to="/" className="navbar__brand">
-          <div className="navbar__logo-wrap">
-            <img
-              src="/Icon.ico"
-              alt="StayVista logo"
-              className="navbar__logo"
-            />
+    <nav className={`navbar ${scrolled ? "navbar--scrolled" : ""}`}>
+      <div className="navbar__container">
+        {/* Brand */}
+        <Link to="/" className="navbar__brand" onClick={closeMenu}>
+          <div className="navbar__brand-logo">
+            <img src="/Icon.ico" alt="StayVista" />
           </div>
-          <div className="navbar__brand-text" aria-label="StayVista home">
-            <span className="navbar__brand-title">StayVista</span>
-            <span className="navbar__brand-accent" />
+          <div className="navbar__brand-content">
+            <span className="navbar__brand-name">StayVista</span>
+            <span className="navbar__brand-tagline">Discover Your Stay</span>
           </div>
         </Link>
+
+        {/* Mobile Toggle */}
         <button
-          type="button"
-          className={`navbar__menu-toggle ${isMenuOpen ? "is-active" : ""}`}
+          className={`navbar__toggle ${isMenuOpen ? "navbar__toggle--active" : ""}`}
           onClick={toggleMenu}
-          aria-expanded={isMenuOpen}
-          aria-controls="primary-navigation"
+          aria-label="Toggle menu"
         >
-          <span className="navbar__menu-icon" aria-hidden="true" />
-          <span className="navbar__menu-label">Menu</span>
+          <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} />
         </button>
 
-        <nav
-          id="primary-navigation"
-          className={`navbar__nav ${isMenuOpen ? "navbar__nav--open" : ""}`}
-          aria-label="Primary navigation"
-        >
-          <div className="navbar__link-group navbar__link-group--primary">
-            <Link to="/" className={`navbar__link ${isActive("/") ? "navbar__link--active" : ""}`} onClick={closeMenu}>
-              Discover
+        {/* Navigation Links */}
+        <div className={`navbar__menu ${isMenuOpen ? "navbar__menu--open" : ""}`}>
+          <div className="navbar__links">
+            <Link
+              to="/"
+              className={`navbar__link ${isActive("/") ? "navbar__link--active" : ""}`}
+              onClick={closeMenu}
+            >
+              <FontAwesomeIcon icon={faHome} className="navbar__link-icon" />
+              <span>Discover</span>
             </Link>
-            {!isAdmin && (
-              <Link
-                to="/hotels"
-                className={`navbar__link ${isActive("/hotels") ? "navbar__link--active" : ""}`}
-                onClick={closeMenu}
-              >
-                Stays
-              </Link>
-            )}
+            <Link
+              to="/hotels"
+              className={`navbar__link ${isActive("/hotels") ? "navbar__link--active" : ""}`}
+              onClick={closeMenu}
+            >
+              <FontAwesomeIcon icon={faHotel} className="navbar__link-icon" />
+              <span>Stays</span>
+            </Link>
             <Link
               to="/experiences"
               className={`navbar__link ${isActive("/experiences") ? "navbar__link--active" : ""}`}
               onClick={closeMenu}
             >
-              Experiences
+              <FontAwesomeIcon icon={faCompass} className="navbar__link-icon" />
+              <span>Experiences</span>
             </Link>
             <Link
               to="/stories"
               className={`navbar__link ${isActive("/stories") ? "navbar__link--active" : ""}`}
               onClick={closeMenu}
             >
-              Stories
+              <FontAwesomeIcon icon={faBook} className="navbar__link-icon" />
+              <span>Stories</span>
             </Link>
           </div>
-          {user && !isAdmin && (
-            <div className="navbar__link-group navbar__link-group--user">
-              <Link
-                to="/bookings"
-                className={`navbar__link ${isActive("/bookings") ? "navbar__link--active" : ""}`}
-                onClick={closeMenu}
-              >
-                My bookings
-              </Link>
-              <Link
-                to="/transactions"
-                className={`navbar__link ${isActive("/transactions") ? "navbar__link--active" : ""}`}
-                onClick={closeMenu}
-              >
-                Transactions
-              </Link>
-            </div>
-          )}
-        </nav>
-        <div className="navbar__actions">
-          {user ? (
-            <div className={`navbar__profile ${isAdmin ? "navbar__profile--admin" : ""}`}>
-              <div className="navbar__avatar">{user.username?.[0]?.toUpperCase()}</div>
-              <div className="navbar__profile-info">
-                <span className="navbar__profile-name">{user.username}</span>
-                <span className="navbar__profile-role">
-                  {isAdmin ? "Administrator" : "Member"}
-                </span>
-              </div>
-              <button
-                type="button"
-                className={`navbar__button ${isAdmin ? "navbar__button--admin" : "btn-outline"}`}
-                onClick={handleLogout}
-                aria-label="Sign out"
-              >
-                {isAdmin ? (
-                  <svg
-                    className="navbar__button-icon"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                    <polyline points="16 17 21 12 16 7" />
-                    <line x1="21" y1="12" x2="9" y2="12" />
-                  </svg>
-                ) : (
-                  "Sign out"
-                )}
-              </button>
-            </div>
-          ) : (
+
+          {user && (
             <>
-              <Link to="/login" className="btn-outline navbar__button" onClick={closeMenu}>
-                Sign in
-              </Link>
-              <Link to="/register" className="btn-primary navbar__button" onClick={closeMenu}>
-                Create account
-              </Link>
+              <div className="navbar__divider"></div>
+              <div className="navbar__links">
+                <Link
+                  to="/bookings"
+                  className={`navbar__link ${isActive("/bookings") ? "navbar__link--active" : ""}`}
+                  onClick={closeMenu}
+                >
+                  <FontAwesomeIcon icon={faCalendarCheck} className="navbar__link-icon" />
+                  <span>My Bookings</span>
+                </Link>
+                <Link
+                  to="/transactions"
+                  className={`navbar__link ${isActive("/transactions") ? "navbar__link--active" : ""}`}
+                  onClick={closeMenu}
+                >
+                  <FontAwesomeIcon icon={faReceipt} className="navbar__link-icon" />
+                  <span>Transactions</span>
+                </Link>
+              </div>
             </>
           )}
+
+          {/* Mobile User Section / Auth Buttons - Always at the end */}
+          <div className="navbar__divider"></div>
+          <div className="navbar__mobile-actions">
+            {user ? (
+              <>
+                <div className="navbar__mobile-user-header">
+                  <div className="navbar__user-avatar">
+                    {user.username?.[0]?.toUpperCase()}
+                  </div>
+                  <div className="navbar__user-info">
+                    <span className="navbar__user-name">{user.username}</span>
+                    <span className="navbar__user-role">Member</span>
+                  </div>
+                </div>
+                <button
+                  className="navbar__link navbar__link--logout"
+                  onClick={() => {
+                    handleLogout();
+                    closeMenu();
+                  }}
+                >
+                  <FontAwesomeIcon icon={faSignOutAlt} className="navbar__link-icon" />
+                  <span>Sign Out</span>
+                </button>
+              </>
+            ) : (
+              <div className="navbar__auth-buttons">
+                <Link to="/login" className="navbar__btn navbar__btn--outline" onClick={closeMenu}>
+                  Sign In
+                </Link>
+                <Link to="/register" className="navbar__btn navbar__btn--primary" onClick={closeMenu}>
+                  Get Started
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
-        <div
-          className={`navbar__mobile-overlay ${isMenuOpen ? "navbar__mobile-overlay--visible" : ""}`}
-          role="presentation"
-          onClick={closeMenu}
-        />
+
+        {/* Desktop User Section */}
+        {user && (
+          <div className="navbar__user navbar__user--desktop">
+            <div className="navbar__user-avatar">
+              {user.username?.[0]?.toUpperCase()}
+            </div>
+            <div className="navbar__user-info">
+              <span className="navbar__user-name">{user.username}</span>
+              <span className="navbar__user-role">Administrator</span>
+            </div>
+            <button
+              className="navbar__logout"
+              onClick={handleLogout}
+              aria-label="Logout"
+            >
+              <FontAwesomeIcon icon={faSignOutAlt} />
+            </button>
+          </div>
+        )}
       </div>
-    </header>
+
+      {/* Mobile Overlay */}
+      {isMenuOpen && (
+        <div className="navbar__overlay" onClick={closeMenu}></div>
+      )}
+    </nav>
   );
 };
 

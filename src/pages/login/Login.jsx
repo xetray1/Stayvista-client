@@ -30,7 +30,27 @@ const Login = () => {
         password: credentials.password,
       };
       const response = await loginRequest(trimmedPayload);
-      dispatch({ type: "LOGIN_SUCCESS", payload: response.details });
+
+      const {
+        details: responseDetails = {},
+        token,
+        accessToken,
+        access_token,
+        jwtToken,
+      } = response ?? {};
+
+      const baseDetails =
+        responseDetails && typeof responseDetails === "object" && Object.keys(responseDetails).length > 0
+          ? responseDetails
+          : (response ?? {});
+
+      const resolvedToken = token || accessToken || access_token || jwtToken;
+      const userPayload = {
+        ...baseDetails,
+        ...(resolvedToken ? { token: resolvedToken } : {}),
+      };
+
+      dispatch({ type: "LOGIN_SUCCESS", payload: userPayload });
       navigate("/");
     } catch (err) {
       const payload = err?.data ?? { message: "Login failed" };
