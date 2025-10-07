@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "StayVista client for booking premium stays.",
-  "author": "StayVista Team",
+  "author": "UtkarshV",
   "license": "UNLICENSED",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
